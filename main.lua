@@ -99,7 +99,7 @@ end
 function love.draw()
     push:apply('start')
 
-    love.graphics.clear(40/255, 45/255, 52/255, 255/255)
+    love.graphics.clear(0, 1, 0, 255/255)
     love.graphics.setFont(smallFont)
 
     if gameState == 'start' then
