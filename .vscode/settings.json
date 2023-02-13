@@ -1,0 +1,19 @@
+{
+    "Lua.runtime.version": "LuaJIT",
+    "Lua.runtime.special": [],
+    "Lua.workspace.library": [
+        "${3rd}/love2d/library"
+    ],
+    "git.ignoreMissingGitWarning": false,
+    "python.linting.pylintCategorySeverity.warning": "Warning",
+    "typescript.reportStyleChecksAsWarnings": true,
+    "markdown.validate.duplicateLinkDefinitions.enabled": "warning",
+    "markdown.validate.fileLinks.enabled": "warning",
+    "markdown.validate.fragmentLinks.enabled": "warning",
+    "css.lint.emptyRules": "warning",
+    "css.lint.propertyIgnoredDueToDisplay": "error",
+    "css.lint.unknownProperties": "warning",
+    "Lua.diagnostics.disable": [
+        "trailing-space"
+    ]
+}
