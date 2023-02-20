@@ -16,6 +16,8 @@ PADDLE_SPEED = 200
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
+
+    love.window.setTitle('Pong You!')
     
 
     math.randomseed(os.time())
@@ -37,18 +39,7 @@ function love.load()
 
     ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
 
-    --[[player1Score = 0
-    player2Score = 0
-
-    player1Y = 30
-    player2Y = VIRTUAL_HEIGHT -50
-
-    ballX = VIRTUAL_WIDTH / 2 -2
-    ballY = VIRTUAL_HEIGHT / 2 - 2
-
-    ballDX = math.random (2) == 1 and 100 or -100
-    ballDY = math.random(-50,50)
-]]
+    
     gameState = 'start'
 end
 
@@ -112,6 +103,14 @@ function love.draw()
     player2:render()
     
     ball:render()
+
+    displayFPS()
     
     push:apply('end')
+end
+
+function displayFPS()
+    love.graphics.setFont(smallFont)
+    love.graphics.setColor(0, 1, 0, 1)
+    love.graphics.print('FPS: '..tostring(love.timer.getFPS()), 10, 10)
 end
