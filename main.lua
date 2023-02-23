@@ -115,7 +115,7 @@ function love.update(dt)
             servingPlayer = 1
             player2Score = player2Score + 1
 
-            if player2Score == 1 then
+            if player2Score == 10 then
                 winningPlayer = 2
                 gameState = 'done'
             else
@@ -128,7 +128,7 @@ function love.update(dt)
             servingPlayer = 2
             player1Score = player1Score + 1
         
-            if player1Score == 1 then
+            if player1Score == 10 then
                 winningPlayer = 1
                 gameState = 'done'
             else        
@@ -175,11 +175,26 @@ function love.keypressed(key)
         -- la funcion que utiliza LÖVE2D para cerrar la aplicacion
         love.event.quit()
     -- si prescionamos enter pasamos a modo play
+
     elseif key == 'enter' or key == 'return' then
         if gameState == 'start' then
             gameState = 'serve'
         elseif gameState == 'serve' then
             gameState = 'play'
+        elseif gameState =='done' then
+            gameState = 'serve'
+
+            ball:reset()
+
+            player1Score = 0
+            player2Score = 0
+
+            if winningPlayer == 1 then
+                servingPlayer = 2
+
+            else
+                servingPlayer = 1
+            end
         end
     end
 end
@@ -208,7 +223,7 @@ function love.draw()
         love.graphics.setFont(smallFont)
         love.graphics.printf('Jugador '.. tostring(servingPlayer)..' Saca!',
             0, 10, VIRTUAL_WIDTH, "center")
-        love.graphics.printf('ENTER para sacar!', 0, 20, VIRTUAL_WIDTH, 'center')
+        --love.graphics.printf('ENTER para sacar!', 0, 20, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'play' then
         -- Sin mensajes durante el juego
     elseif gameState == 'done' then
@@ -229,7 +244,7 @@ function love.draw()
     -- renderizar la pelota utilizando el methodo render de la clase
     ball:render()
 
-    displayFPS()
+    --displayFPS()
     
     -- terminar renderizacion a la resolucion virtual
     push:apply('end')
