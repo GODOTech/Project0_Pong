@@ -15,48 +15,50 @@ VIRTUAL_HEIGHT = 243
 PADDLE_SPEED = 200
 
 
--- corre solo una vez, cuando se inicia el programa
+--[[corre solo una vez, cuando se inicia el programa]]
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
     love.window.setTitle('Phong You!')
     
--- sembrar el RNG para que los numeros aleatorios varien cada vez que se inicia
+    -- sembrar el RNG para que los numeros aleatorios varien cada vez que se inicia
     math.randomseed(os.time())
-
+    
     smallFont = love. graphics.newFont('font.ttf', 8 )
+    largeFont = love.graphics.newFont('font.ttf', 16)
     scoreFont = love.graphics.newFont('font.ttf', 32)
 
     love.graphics.setFont(smallFont)
--- inicializar ventana con resolucion virtual
+    -- inicializar ventana con resolucion virtual
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
         resizable = false,
         vsync = true
         
     })
--- inicializar las variables de puntos para usar luego
+    -- inicializar las variables de puntos para usar luego
     player1Score = 0
     player2Score = 0
     
     servingPlayer = 1
 
--- inicializar las paletas y hacerlas globales para que puedan detectarlas
--- otras funciones y modulos
+    -- inicializar las paletas y hacerlas globales para que puedan detectarlas
+    -- otras funciones y modulos
     player1 = Paddle (10, 30, 5, 20)
     player2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
 
     -- poner la pelota en el medio
     ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
 
--- la variable gamestate, para pasar entre distintas partes del juego (menues, pausa, etc)
--- utilizamos esto para determinar el comprtamiento durante el render y el update
+    -- la variable gamestate, para pasar entre distintas partes del juego (menues, pausa, etc)
+    -- utilizamos esto para determinar el comprtamiento durante el render y el update
     gameState = 'start'
 end
 
---corre cada cuadro , con dt pasado, nuestro delta en segundos desde el ultimo cuadro,
--- que LÖVE2D nos provee
-
+--[[
+    corre cada cuadro , con dt pasado, nuestro delta en segundos desde el ultimo cuadro,
+    que LÖVE2D nos provee
+]]
 function love.update(dt)
     if gameState == 'serve' then
         ball.dy = math.random(-50,50)
@@ -65,7 +67,6 @@ function love.update(dt)
         else
             ball.dx = -math.random(140, 200)
         end
-   
     elseif gameState == 'play' then
 
        -- detectar la colicion de pelota-paletas invirtiendo dx si es cierta
@@ -96,37 +97,48 @@ function love.update(dt)
             end
         end
 
--- detectar bordes de pantalla e invertir
+        -- detectar bordes superior e inferior de pantalla e invertir
         if ball.y <= 0 then
             ball.y = 0
             ball.dy = - ball.dy
         end
 
--- -4 para el tamaño de la pelota 
+        -- -4 para el tamaño de la pelota 
         if ball.y >= VIRTUAL_HEIGHT - 4 then
             ball.y = VIRTUAL_HEIGHT - 4
             ball.dy =  - ball.dy
         end
+    
+
+        --[[si la pelota se pasa de el borde de pantalla, volver a empezar y actualizar puntos]]
+        if ball.x < 0 then
+            servingPlayer = 1
+            player2Score = player2Score + 1
+
+            if player2Score == 1 then
+                winningPlayer = 2
+                gameState = 'done'
+            else
+                gameState = 'serve'
+                ball:reset()
+            end
+        end
+
+        if ball.x > VIRTUAL_WIDTH then
+            servingPlayer = 2
+            player1Score = player1Score + 1
+        
+            if player1Score == 1 then
+                winningPlayer = 1
+                gameState = 'done'
+            else        
+                gameState = 'serve'
+                ball:reset()
+            end
+        end
     end
 
-    -- si la pelota se pasa de el borde de pantalla, volver a empezar y actualizar puntos
-
-    if ball.x < 0 then
-        servingPlayer = 1
-        player2Score = player2Score + 1
-        ball:reset()
-        gameState = 'serve' 
-    end
-
-    if ball.x > VIRTUAL_WIDTH then
-        servingPlayer = 2
-        player1Score = player1Score + 1
-        ball:reset()
-        gameState = 'serve'
-    end
-
-
-    --Player 1 Movement
+    --[[Player 1 Movement]]
     if love.keyboard.isDown('w') then
         player1.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('s') then
@@ -135,7 +147,7 @@ function love.update(dt)
         player1.dy = 0
     end
 
-    --Player 2 Movement
+    --[[Player 2 Movement]]
     if love.keyboard.isDown('up') then
         player2.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('down') then
@@ -143,9 +155,8 @@ function love.update(dt)
     else
         player2.dy = 0
     end
-    
--- actualizar pelota basado en su DX y DY solo si esta en estado play
---escalar la velocidad por dt para que el movimiento se independiente del FPS
+
+    --[[actualizar pelota basado en su DX y DY solo si esta en estado play, y escalar la velocidad por dt para que el movimiento se independiente del FPS]]
     if gameState == 'play' then
         ball:update(dt)
     end
@@ -154,9 +165,10 @@ function love.update(dt)
     player2:update(dt)
 end
 
--- gestion del teclado, llamado por LÖVE2D cada cuadro
--- pasa la tecla que prescionamos para que podamos acceder
-
+--[[
+    gestion del teclado, llamado por LÖVE2D cada cuadro
+    pasa la tecla que prescionamos para que podamos acceder
+]]
 function love.keypressed(key)
     --las teclas pueden accederse a travez de un string
     if key == 'escape' then
@@ -172,8 +184,10 @@ function love.keypressed(key)
     end
 end
 
--- llamado despues del update por LÖVE2D, para dibujar todo en la pantalla
--- actualizado o no
+--[[
+    llamado despues del update por LÖVE2D, para dibujar todo en la pantalla
+    actualizado o no
+]]
 function love.draw()
     -- comenzar a renderizar a la resolucion virtual
     push:apply('start')
@@ -194,9 +208,17 @@ function love.draw()
         love.graphics.setFont(smallFont)
         love.graphics.printf('Jugador '.. tostring(servingPlayer)..' Saca!',
             0, 10, VIRTUAL_WIDTH, "center")
-        --love.graphics.printf('ENTER para sacar!', 0, 20, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('ENTER para sacar!', 0, 20, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'play' then
-        -- sin mensajes durante el juego
+        -- Sin mensajes durante el juego
+    elseif gameState == 'done' then
+     --Mensaje UI
+     love.graphics.setFont(largeFont)
+     love.graphics.printf('Jugador ' .. tostring(winningPlayer) .. ' gana!', 
+            0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.setFont(smallFont)
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Presiona ENTER para la Revancha!', 0, 30, VIRTUAL_WIDTH, 'center')    
     end
 
         
@@ -207,7 +229,7 @@ function love.draw()
     -- renderizar la pelota utilizando el methodo render de la clase
     ball:render()
 
-    --displayFPS()
+    displayFPS()
     
     -- terminar renderizacion a la resolucion virtual
     push:apply('end')
